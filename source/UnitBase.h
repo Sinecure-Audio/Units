@@ -1,7 +1,7 @@
 #pragma once
 
 #include <type_traits>
-#include <ostream>
+#include <string>
 
 template <template<typename> class UnitType, typename InputType>
 class Unit
@@ -100,6 +100,7 @@ public:
 	}
 
 
+	operator std::string() const { return std::to_string(value); }
 
 protected:
 	InputType value{ 0 };
@@ -180,4 +181,7 @@ constexpr auto operator|(const Unit<T, U>& lhs, const Unit<T, V>& rhs) {
 template <template<typename> class T, typename U, typename V>
 constexpr auto operator&(const Unit<T, U>& lhs, const Unit<T, V>& rhs) {
 	return T<U>(lhs.count() & rhs.count());
-}
+}template <template<typename> class T, typename U>
+
+template <template<typename> class T, typename U>
+void operator <<(std::ostream& out, const Unit<T, U>& unit) { out << std::string{*static_cast<const T<U>*>(&unit)}; }

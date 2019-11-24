@@ -82,6 +82,10 @@ public:
 		this->value = (copy / other.count()).count();
 		return *this;
 	}
+
+	operator std::string() const {
+		return (this->value > static_cast<InputType>(defaultMinusInfinitydB) ? std::to_string(this->value) : "-inf ") + "dB";
+	}
 };
 
 template <typename T, typename U>
@@ -106,11 +110,6 @@ template <typename T, typename U>
 constexpr auto operator/(const Decibel<T>& lhs, const Decibel<U>& rhs){
 	using CommonType = std::common_type_t<T, U>;
 	return Decibel<CommonType>{lhs.count() - rhs.count()};
-}
-
-template <typename T>
-std::ostream& operator<<(std::ostream& out, const  Decibel<T>& decibel) {
-	return out << (decibel.count() > defaultMinusInfinitydB ? std::to_string(decibel.count()) : "-inf ") + "dB";
 }
 
 //user defined litereals for making decibel templates
