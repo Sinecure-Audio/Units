@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Units.h"
-#include <algorithm>
-#include <string>
+#include "UnitBase.h"
+#include <cmath>
 
 namespace {
 	constexpr auto defaultMinusInfinitydB = -120.0;
@@ -16,16 +15,14 @@ template <typename InputType>
 class Amplitude : public Unit<Amplitude, InputType>
 {
 public:
-	constexpr Amplitude() = default;
-	constexpr Amplitude(const InputType& initValue) { this->value = initValue; }
+	template <typename T>
+	constexpr Amplitude(const T& initValue) noexcept(std::is_nothrow_constructible_v<InputType, T>) : Unit<Amplitude, InputType>(static_cast<InputType>(initValue)) {}
 
-	template <typename T, std::enable_if_t<std::is_convertible_v<InputType, T>>>
-	constexpr Amplitude(const Amplitude<T>& other) { this->value = InputType(other.count()); }
+	template <typename T>
+	constexpr Amplitude(const Amplitude<T>& other) noexcept(std::is_nothrow_constructible_v<InputType, T>) : Unit<Amplitude, InputType>(static_cast<InputType>(other.count())) {}
 
     template<typename T>
-	constexpr Amplitude(const Decibel<T>& decibelValue)  { this->value = convertDecibelToAmplitude(decibelValue.count()); }
-    template<typename T>
-	Amplitude& operator=(const Decibel<T>& decibelValue) { this->value = convertDecibelToAmplitude(decibelValue.count()); return *this; }
+	constexpr Amplitude(const Decibel<T>& decibelValue)  noexcept(std::is_nothrow_constructible_v<InputType, T>) : Unit<Amplitude, InputType>(convertDecibelToAmplitude(decibelValue.count())) {}
 
 	static constexpr InputType convertDecibelToAmplitude(const InputType& decibelValue, const InputType& minusInfinityDb = defaultMinusInfinitydB) {
 		return decibelValue > minusInfinityDb
@@ -36,50 +33,47 @@ public:
 
 
 
-
 template <typename InputType>
 class Decibel : public Unit<Decibel, InputType>
 {
 public:
-	constexpr Decibel() = default;
+	//Converting constructor for Decibel Types other than Decibel<InputType> 
+	template <typename T>
+	constexpr Decibel(const Decibel<T>& other) noexcept(std::is_nothrow_constructible_v<InputType, T>) : Unit<Decibel, InputType>(static_cast<InputType>(other.count())) {}
 
-	template <typename T> //, std::enable_if_t<std::is_convertible_v<InputType, T>>>
-	constexpr Decibel(const Decibel<T>& other) {this->value = InputType(other.count());}
-	constexpr explicit Decibel(const InputType& initValue) { this->value = initValue; }
-	constexpr Decibel(const Amplitude<InputType>& amplitudeValue) {this->value = convertAmplitudeToDecibel(amplitudeValue.count());}
+	//Explicit converting constructor for algebraic types.
+	template <typename T>
+	constexpr explicit Decibel(const T& initValue) noexcept(std::is_nothrow_constructible_v<InputType, T>) : Unit<Decibel, InputType>(static_cast<InputType>(initValue)) {}
 
-	Decibel& operator=(const Amplitude<InputType>& amplitudeValue)  { this->value = convertAmplitudeToDecibel(amplitudeValue.count()); return *this; }
+	template<typename T>
+	constexpr Decibel(const Amplitude<T>& amplitudeValue)  noexcept(std::is_nothrow_constructible_v<InputType, T>) : Unit<Decibel, InputType>(convertAmplitudeToDecibel(amplitudeValue.count())) {}
 
 	static constexpr auto convertAmplitudeToDecibel(const InputType& amplitudeValue, const InputType& minusInfinitydB = defaultMinusInfinitydB) {
 		return std::max(minusInfinitydB, std::log10(amplitudeValue)* InputType{20});
 	}
 
-    //...
-    template<typename T>
-	constexpr auto operator+= (const Decibel<InputType>& other){	
-     const auto copy = *this;
-		this->value = (copy + other.count()).count();
+    
+    template<typename OtherType>
+	constexpr auto operator+= (const Decibel<OtherType>& other){	
+		this->value = static_cast<InputType>((*this + other).count());
 		return *this;
 	}
 
-	template<typename T>
-	constexpr auto operator-= (const Decibel<InputType>& other){
-		const auto copy = *this;
-		this->value = (copy - other.count()).count();
+	template<typename OtherType>
+	constexpr auto operator-= (const Decibel<OtherType>& other){
+		this->value = static_cast<InputType>((*this - other).count());
 		return *this;
 	}
 
-	template<typename T>
-	constexpr auto operator*= (const Decibel<InputType>& other){
-		const auto copy = *this;
-		this->value = (copy * other.count()).count();
+	template<typename OtherType>
+	constexpr auto operator*= (const Decibel<OtherType>& other){
+		this->value = static_cast<InputType>((*this*other).count());
 		return *this;
 	}
 
-	template<typename T>
-	constexpr auto operator/= (const Decibel<InputType>& other){
-        const auto copy = *this;
-		this->value = (copy / other.count()).count();
+	template<typename OtherType>
+	constexpr auto operator/= (const Decibel<OtherType>& other){
+		this->value = static_cast<InputType>((*this/other).count());
 		return *this;
 	}
 
@@ -90,26 +84,26 @@ public:
 
 template <typename T, typename U>
 constexpr auto operator+(const Decibel<T>& lhs, const Decibel<U>& rhs){
-	using CommonType = std::common_type_t<T, U>;
-	return Decibel<CommonType>{CommonType{10}*std::log(std::pow(CommonType{10}, lhs.count()/CommonType{10}) + std::pow(CommonType{10}, rhs.count()/CommonType{10}))};
+	const auto newValue = std::log(std::pow(T{10}, lhs.count()/T{10}) + std::pow(U{10}, rhs.count()/U{10}));
+	return Decibel<std::decay_t<decltype(newValue)>>{newValue};
 }
 
 template <typename T, typename U>
 constexpr auto operator-(const Decibel<T>& lhs, const Decibel<U>& rhs){
-	using CommonType = std::common_type_t<T, U>;
-	return Decibel<CommonType>{CommonType{10}*std::log(std::pow(CommonType{10}, lhs.count()/CommonType{10}) - std::pow(CommonType{10}, rhs.count()/CommonType{10}))};
+	const auto newValue = std::log(std::pow(T{10}, lhs.count()/T{10}) - std::pow(U{10}, rhs.count()/U{10}));
+	return Decibel<std::decay_t<decltype(newValue)>>{newValue};
 }
 
 template <typename T, typename U>
 constexpr auto operator*(const Decibel<T>& lhs, const Decibel<U>& rhs){
-	using CommonType = std::common_type_t<T, U>;
-	return Decibel<CommonType>{lhs.count() + rhs.count()};
+	const auto newValue = lhs.count()+rhs.count();
+	return Decibel<std::decay_t<decltype(newValue)>>{newValue};
 }
 
 template <typename T, typename U>
 constexpr auto operator/(const Decibel<T>& lhs, const Decibel<U>& rhs){
-	using CommonType = std::common_type_t<T, U>;
-	return Decibel<CommonType>{lhs.count() - rhs.count()};
+	const auto newValue = lhs.count()-rhs.count();
+	return Decibel<std::decay_t<decltype(newValue)>>{newValue};
 }
 
 //user defined litereals for making decibel templates

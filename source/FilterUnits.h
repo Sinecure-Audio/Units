@@ -1,6 +1,6 @@
 #pragma once
 
-#include "./Units.h"
+#include "UnitBase.h"
 
 template <typename InputType>
 class QCoefficient;
@@ -9,17 +9,17 @@ template <typename InputType>
 class ResonanceCoefficient : public Unit<ResonanceCoefficient, InputType>
 {
 public:
-	constexpr ResonanceCoefficient() = default;
+	template <typename T>
+	constexpr explicit ResonanceCoefficient(const T& initValue) noexcept(std::is_nothrow_constructible_v<InputType, T>) : Unit<ResonanceCoefficient, InputType>(static_cast<InputType>(initValue)) {}
 
-	constexpr explicit ResonanceCoefficient(const InputType& initValue) {this->value = initValue;}
+	template <typename T>
+	constexpr ResonanceCoefficient(const ResonanceCoefficient<T>& other) noexcept(std::is_nothrow_constructible_v<InputType, T>) : Unit<ResonanceCoefficient, InputType>(static_cast<InputType>(other.count())) {}
 
-	template <typename T>//	, std::enable_if_t<std::is_convertible_v<InputType, T>>>
-	constexpr ResonanceCoefficient(const ResonanceCoefficient<T>& other) { this->value = InputType(other.count()); }
+	template <typename T>
+	constexpr ResonanceCoefficient(const QCoefficient<T>& qValue)  noexcept(std::is_nothrow_constructible_v<InputType, T>) : Unit<ResonanceCoefficient, InputType>(static_cast<InputType>(convertQToResonance (qValue .count()))) {}
 
-	ResonanceCoefficient& operator=(const QCoefficient<InputType>&& newCoefficient) noexcept { this->value = convertQToResonance(newCoefficient.count()); return *this; }
-
-	static InputType convertQToResonance(const InputType& QCoefficient) {
-		return InputType{1.0} - InputType{1.0} / (InputType{2.0}*QCoefficient);
+	static constexpr InputType convertQToResonance(const InputType& qValue) noexcept {
+		return InputType{1.0} - InputType{1.0} / (InputType{2.0}*qValue);
 	}
 };
 
@@ -27,18 +27,16 @@ template <typename InputType>
 class QCoefficient : public Unit<QCoefficient, InputType>
 {
 public:
-	constexpr QCoefficient() = default;
+	template <typename T>
+	constexpr explicit QCoefficient(const T& initValue) noexcept(std::is_nothrow_constructible_v<InputType, T>) : Unit<QCoefficient, InputType>(static_cast<InputType>(initValue)) {}
 
-	constexpr explicit QCoefficient(const InputType& initValue) {this->value = initValue;}
+	template <typename T>
+	constexpr QCoefficient(const QCoefficient<T>& other) noexcept(std::is_nothrow_constructible_v<InputType, T>) : Unit<QCoefficient, InputType>(static_cast<InputType>(other.count())) {}
 
-	template <typename T, std::enable_if_t<std::is_convertible_v<InputType, T>>>
-	constexpr QCoefficient(const QCoefficient<T>& other) { this->value = InputType(other.count()); }
+	template <typename T>
+	constexpr QCoefficient(const ResonanceCoefficient<T>& resonanceCoefficient)  noexcept(std::is_nothrow_constructible_v<InputType, T>) : Unit<QCoefficient, InputType>(static_cast<InputType>(convertResonanceToQ (resonanceCoefficient.count()))) {}
 
-	constexpr QCoefficient(const ResonanceCoefficient<InputType>& resonanceValue)   { this->value = convertResonanceToQ (resonanceValue .count()); }
-
-	QCoefficient& operator=(const ResonanceCoefficient<InputType>& newCoefficient)  noexcept { this->value = convertResonanceToQ(newCoefficient .count()); return *this; }
-
-	static InputType convertResonanceToQ(const InputType& resonanceCoefficient) {
-		return static_cast<InputType>(1.0 / (2.0*(1.0 - resonanceCoefficient)));
+	static InputType convertResonanceToQ(const InputType& resonanceValue) {
+		return InputType{1.0} / (InputType{2.0}*(InputType{1.0} - resonanceValue));
 	}
 };
