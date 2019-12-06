@@ -210,30 +210,39 @@ TEST_CASE("Unit Ostream", "[Units]") {
 	REQUIRE(d.count() == 0.0f);	
 }
 
-TEST_CASE("decibelLiteral", "[Decibels]") {
+TEST_CASE("Decibel Literal", "[Decibels]") {
 	const Decibel<float> d = 0.0_dB;
-	REQUIRE(d.count() == 0.0f);
+	REQUIRE_THAT(d.count(), Catch::WithinRel(0.0f));
+
 }
 
 TEST_CASE("Decibel Addition", "[Decibels]") {
 	const Decibel<double> d = Amplitude<double>{sqrt(.5)};
-	// REQUIRE(almost_equal((d+d).count(), 0.0));
-	REQUIRE_THAT((d+d).count(), Catch::Matchers::WithinRel(0.0));
+	const auto fullPowerAmount = (d+d).count();
+	REQUIRE_THAT(fullPowerAmount, Catch::WithinAbs(0.0, .000005));
 }
 
 TEST_CASE("Decibel Subtraction", "[Decibels]") {
 	const Decibel<float> d = 0.0_dB;
-	REQUIRE_THAT((d-d).count(), Catch::Matchers::WithinRel(-0.0f));
+	using UnderlyingType = decltype(d.count());
+	if constexpr(std::numeric_limits<UnderlyingType>::has_infinity)//subtracting two identical dbfs values should result in -inf or something really close
+		REQUIRE((d-d).count() == std::numeric_limits<UnderlyingType>::infinity()*UnderlyingType{-1});
+	else
+		REQUIRE((d-d).count() == std::numeric_limits<UnderlyingType>::min());
 }
 
 TEST_CASE("Decibel Multiplication", "[Decibels]") {
 	const Decibel<float> d = -3.0_dB;
-	REQUIRE_THAT((d*d).count(), Catch::Matchers::WithinRel(-6.0f));
+	REQUIRE_THAT((d*d).count(), Catch::WithinRel(-6.0f));
 }
 
 TEST_CASE("Decibel Division", "[Decibels]") {
 	const Decibel<float> d = -3.0_dB;
-	REQUIRE_THAT((d/d).count(), Catch::Matchers::WithinRel(0.0f));
+	REQUIRE_THAT((d/d).count(), Catch::WithinRel(0.0f));
+}
+
+TEST_CASE("Decibel String Conversion", "[Decibels]") {
+	REQUIRE(std::string{-200.0_dB} == "-inf dB");
 }
 
 
@@ -247,11 +256,9 @@ TEST_CASE("Amplitude Examples", "[Examples]") {
     const Amplitude<float> floatHalfPowerAmplitude = halfPowerAmplitude;
     const Decibel<float> floatHalfPowerDecibel = halfPowerDecibel;
 
-	REQUIRE_THAT(decibel.count(), Catch::Matchers::WithinRel(Decibel<float>{-6.0206_dB}.count()));
+	REQUIRE_THAT(decibel.count(), Catch::WithinRel(Decibel<float>{-6.0206_dB}.count()));
 
-	REQUIRE(floatHalfPowerDecibel+floatHalfPowerDecibel == 0.0_dB);
-	REQUIRE_THAT((floatHalfPowerDecibel+Decibel<float>{floatHalfPowerAmplitude}).count(), Catch::Matchers::WithinRel(0.0f));
-	REQUIRE(std::string{-200.0_dB} == "-inf dB");
+	REQUIRE_THAT((floatHalfPowerDecibel+floatHalfPowerDecibel).count(), Catch::WithinAbs(0.0, .000005));
 }
 
 TEST_CASE("Resonance Examples", "[Examples]") {
@@ -260,7 +267,6 @@ TEST_CASE("Resonance Examples", "[Examples]") {
     const ResonanceCoefficient<float> largeResonance{.99999f};
 
 	REQUIRE(q.count() == .5f);
-	REQUIRE(ResonanceCoefficient<float>{q}.count() == .0f);
+	REQUIRE_THAT(ResonanceCoefficient<float>{q}.count(), Catch::WithinRel(0.0f));
 	REQUIRE(QCoefficient<float>{largeResonance}.count() > 420.0f);
-	// REQUIRE(QCoefficient<double>{1.0/sqrt(2.0)}== ResonanceCoefficient<double>{.5});
 }
