@@ -1,5 +1,6 @@
-#define CATCH_CONFIG_MAIN	
-#include "catch.hpp"
+#include <catch2/catch.hpp>
+
+#include <iostream>
 
 #include "../include/Units.h"
 
@@ -129,12 +130,12 @@ TEST_CASE("Unit Or Assign", "[Units]") {
 
 TEST_CASE("Unit Left Shift1", "[Units]") {
 	const Decibel<int> d(16);
-	REQUIRE(d<<+1 == Decibel<int>(32));
+	REQUIRE((d << 1) == Decibel<int>(32));
 }
 
 TEST_CASE("Unit Right Shift1", "[Units]") {
 	const Decibel<int> d(16);
-	REQUIRE(d>>+1 == Decibel<int>(8));
+	REQUIRE((d >> 1) == Decibel<int>(8));
 }
 
 TEST_CASE("Unit Post-Increment", "[Units]") {
@@ -197,7 +198,7 @@ TEST_CASE("Unit ModAccum", "[Units]") {
 
 TEST_CASE("Unit String", "[Units]") {
 	const Amplitude<float> a = 0.0;
-	REQUIRE(std::string{a} == std::string{"0.000000"});	
+	REQUIRE(std::string(std::to_string(a)) == std::string(std::to_string(0.0)));	
 }
 
 TEST_CASE("Unit Ostream", "[Units]") {
@@ -241,8 +242,32 @@ TEST_CASE("Decibel Division", "[Decibels]") {
 	REQUIRE_THAT((d/d).count(), Catch::WithinRel(0.0f));
 }
 
+TEST_CASE("-inf dB", "[Decibels]") {
+	REQUIRE_THAT(defaultMinusInfinitydB<float>.count(), Catch::WithinRel(-192.0f));
+	REQUIRE_THAT(defaultMinusInfinitydB<double>.count(), Catch::WithinRel(-384.0f));
+
+	REQUIRE(!Catch::WithinRel(0.0f).match(Amplitude<float>::convertDecibelToAmplitude(-193.0f)));
+}
+
 TEST_CASE("Decibel String Conversion", "[Decibels]") {
-	REQUIRE(std::string{-200.0_dB} == "-inf dB");
+	REQUIRE(std::string(Decibel<int>{-20}) == "-20dB");
+	REQUIRE(std::string(Decibel<int>{-0}) == "0dB");
+	REQUIRE(std::string(Decibel<int>{0}) == "0dB");
+	REQUIRE(std::string(Decibel<int>{20}) == "20dB");
+
+	REQUIRE(std::string(-20.0_dB) == "-20.000000dB");
+	REQUIRE(std::string(-0.0_dB) == "-0.000000dB");
+	REQUIRE(std::string(0.0_dB) == "0.000000dB");
+	REQUIRE(std::string(20.0_dB) == "20.000000dB");
+
+	REQUIRE(std::string{Decibel<long double>{std::numeric_limits<long double>::lowest()}} == "-inf dB");
+	REQUIRE(std::string(Decibel<float>{-192}) == "-inf dB");
+	REQUIRE(std::string(Decibel<double>{-384}) == "-inf dB");
+}
+
+TEST_CASE("-inf dB", "[Decibels]") {
+	REQUIRE(defaultMinusInfinitydB<float> <= -192.0_dB);
+	REQUIRE(defaultMinusInfinitydB<double> <= -384.0_dB);
 }
 
 
@@ -257,6 +282,8 @@ TEST_CASE("Amplitude Examples", "[Examples]") {
     const Decibel<float> floatHalfPowerDecibel = halfPowerDecibel;
 
 	REQUIRE_THAT(decibel.count(), Catch::WithinRel(Decibel<float>{-6.0206_dB}.count()));
+
+	REQUIRE_THAT(static_cast<float>(halfPowerAmplitude.count()), Catch::WithinRel(floatHalfPowerAmplitude.count()));
 
 	REQUIRE_THAT((floatHalfPowerDecibel+floatHalfPowerDecibel).count(), Catch::WithinAbs(0.0, .000005));
 }
