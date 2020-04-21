@@ -9,7 +9,7 @@ class Unit
 public:
 	constexpr Unit(const InputType& initialValue) noexcept(noexcept(std::is_nothrow_constructible_v<InputType>)) : value(initialValue) {}
 
-	constexpr auto operator-()  const noexcept { return UnitType<InputType>(value * InputType{-1.0}); }
+	constexpr auto operator-()  const noexcept { return UnitType<InputType>(value * InputType{-1}); }
 
 	constexpr InputType count() const noexcept {return value;}
 
@@ -111,8 +111,8 @@ constexpr auto operator/(const Unit<T, U>& lhs, const U& rhs) noexcept(noexcept(
 }
 
 // operators * and / work with normal types and not units to avoid having to deal with multiple dimensions of units.
-template <template<typename> class T, typename U, typename V>
-constexpr auto operator*(const V& lhs, const Unit<T, U>& rhs) noexcept(noexcept(rhs * lhs)) { return rhs*lhs; }
+template <template<typename> class T, typename U>
+constexpr auto operator*(const U& lhs, const Unit<T, U>& rhs) noexcept(noexcept(rhs * lhs)) { return rhs*lhs; }
 template <template<typename> class T, typename U>
 constexpr auto operator/(const U& lhs, const Unit<T, U>& rhs) noexcept(noexcept(lhs / rhs.count()) && std::is_nothrow_constructible_v<T<U>, U>) { return T<U>{lhs/rhs.count()};}
 
@@ -139,4 +139,4 @@ template <template<typename> class T, typename U, typename V>
 constexpr auto operator&(const Unit<T, U>& lhs, const V& rhs)    noexcept(noexcept(lhs.count() &  rhs) && std::is_nothrow_constructible_v<T<U>, U>) { return T<U>(lhs.count() & rhs); }
 
 template <template<typename> class T, typename U>
-void operator <<(std::ostream& out, const Unit<T, U>& unit) { out << std::string{*static_cast<const T<U>*>(&unit)}; }
+void operator <<(std::ostream& out, const Unit<T, U>& unit) { out << std::string(*static_cast<const T<U>*>(&unit)); }

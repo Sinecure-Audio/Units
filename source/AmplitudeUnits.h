@@ -3,12 +3,15 @@
 #include "UnitBase.h"
 #include <cmath>
 
-namespace {
-	constexpr auto defaultMinusInfinitydB = -120.0;
-}
-
 template <typename InputType>
 class Decibel;
+
+//Formula I learned in school for how many decibels can fit into a type
+//Doesn't seem right...
+template<typename NumericType>
+constexpr auto defaultMinusInfinitydB = std::is_arithmetic<NumericType>::value 
+										? Decibel<NumericType>{static_cast<int>(sizeof(NumericType)*8)*-6} 
+										: Decibel<NumericType>{-120};
 
 
 template <typename InputType>
@@ -24,10 +27,12 @@ public:
     template<typename T>
 	constexpr Amplitude(const Decibel<T>& decibelValue)  noexcept(std::is_nothrow_constructible_v<InputType, T>) : Unit<Amplitude, InputType>(convertDecibelToAmplitude(decibelValue.count())) {}
 
-	static constexpr InputType convertDecibelToAmplitude(const InputType& decibelValue, const InputType& minusInfinityDb = defaultMinusInfinitydB) {
-		return decibelValue > minusInfinityDb
-			? std::pow(InputType{10}, decibelValue * InputType{0.05}) 
-			: InputType{0};
+	constexpr operator InputType() const noexcept {return this->count();}
+
+	static constexpr InputType convertDecibelToAmplitude(const InputType& decibelValue, const InputType& minusInfinityDb = defaultMinusInfinitydB<InputType>.count()) {
+		return (decibelValue > minusInfinityDb
+			? std::pow(InputType(10), decibelValue * InputType(0.05)) 
+			: InputType(0));
 	}
 };
 
@@ -41,14 +46,15 @@ public:
 	template <typename T>
 	constexpr Decibel(const Decibel<T>& other) noexcept(std::is_nothrow_constructible_v<InputType, T>) : Unit<Decibel, InputType>(static_cast<InputType>(other.count())) {}
 
-	//Explicit converting constructor for algebraic types.
-	template <typename T>
-	constexpr explicit Decibel(const T& initValue) noexcept(std::is_nothrow_constructible_v<InputType, T>) : Unit<Decibel, InputType>(static_cast<InputType>(initValue)) {}
+	// Explicit converting constructor for non-unit types
+    // if they can be converted to the underlying type.
+	constexpr explicit Decibel(const InputType& initValue) noexcept(std::is_nothrow_copy_constructible<InputType>::value) : Unit<Decibel, InputType>(initValue) {}
 
+    //Converting constructor for amplitude units
 	template<typename T>
 	constexpr Decibel(const Amplitude<T>& amplitudeValue)  noexcept(std::is_nothrow_constructible_v<InputType, T>) : Unit<Decibel, InputType>(convertAmplitudeToDecibel(amplitudeValue.count())) {}
 
-	static constexpr auto convertAmplitudeToDecibel(const InputType& amplitudeValue, const InputType& minusInfinitydB = defaultMinusInfinitydB) {
+	static constexpr auto convertAmplitudeToDecibel(const InputType& amplitudeValue, const InputType& minusInfinitydB = defaultMinusInfinitydB<InputType>.count()) {
 		return std::max(minusInfinitydB, std::log10(amplitudeValue)* InputType{20});
 	}
 
@@ -78,7 +84,7 @@ public:
 	}
 
 	operator std::string() const {
-		return (this->value > static_cast<InputType>(defaultMinusInfinitydB) ? std::to_string(this->value) : "-inf ") + "dB";
+		return (*this > defaultMinusInfinitydB<InputType> ? std::to_string(this->value) : "-inf ") + "dB";
 	}
 };
 
