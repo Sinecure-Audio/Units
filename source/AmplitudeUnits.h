@@ -8,10 +8,25 @@ class Decibel;
 
 //Formula I learned in school for how many decibels can fit into a type
 //Doesn't seem right...
+#ifdef _MSC_VER
 template<typename NumericType>
-constexpr auto defaultMinusInfinitydB = std::is_arithmetic<NumericType>::value 
+struct DummyDB {
+private:
+	static constexpr NumericType val = std::is_arithmetic<NumericType>::value
+					 ? NumericType{ static_cast<int>(sizeof(NumericType) * 8) * -6 }
+					 : NumericType{ -120 };
+public:
+	constexpr const auto& count() const noexcept { 
+		return val;
+} };
+template<typename NumericType>
+constexpr DummyDB<NumericType> defaultMinusInfinitydB{};
+#else
+template<typename NumericType>
+constexpr auto defaultMinusInfinitydB = std::is_arithmetic<NumericType>::value
 										? Decibel<NumericType>{static_cast<int>(sizeof(NumericType)*8)*-6} 
 										: Decibel<NumericType>{-120};
+#endif
 
 
 template <typename InputType>
@@ -84,7 +99,7 @@ public:
 	}
 
 	operator std::string() const {
-		return (*this > defaultMinusInfinitydB<InputType> ? std::to_string(this->value) : "-inf ") + "dB";
+		return (this->count() > defaultMinusInfinitydB<InputType>.count() ? std::to_string(this->value) : "-inf ") + "dB";
 	}
 };
 
