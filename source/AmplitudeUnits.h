@@ -117,6 +117,6 @@ constexpr auto operator"" _dB(long double val) {
 	return Decibel<long double>(val);
 }
 
-constexpr auto operator"" _dB(unsigned long long val) {
-	return Decibel<unsigned long long >(val);
-}
+//constexpr auto operator"" _dB(unsigned long long val) {
+//	return Decibel<unsigned long long >(val);
+//}
