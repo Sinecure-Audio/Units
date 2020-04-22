@@ -246,7 +246,7 @@ TEST_CASE("-inf dB", "[Decibels]") {
 	REQUIRE_THAT(defaultMinusInfinitydB<float>.count(), Catch::WithinRel(-192.0f));
 	REQUIRE_THAT(defaultMinusInfinitydB<double>.count(), Catch::WithinRel(-384.0f));
 
-	REQUIRE(!Catch::WithinRel(0.0f).match(Amplitude<float>::convertDecibelToAmplitude(-193.0f)));
+	REQUIRE(!Catch::WithinRel(0.0f).match(Amplitude<double>::convertDecibelToAmplitude(-193.0f)));
 }
 
 TEST_CASE("Decibel String Conversion", "[Decibels]") {
@@ -263,11 +263,6 @@ TEST_CASE("Decibel String Conversion", "[Decibels]") {
 	REQUIRE(std::string{Decibel<long double>{std::numeric_limits<long double>::lowest()}} == "-inf dB");
 	REQUIRE(std::string(Decibel<float>{-192}) == "-inf dB");
 	REQUIRE(std::string(Decibel<double>{-384}) == "-inf dB");
-}
-
-TEST_CASE("-inf dB", "[Decibels]") {
-	REQUIRE(defaultMinusInfinitydB<float> <= -192.0_dB);
-	REQUIRE(defaultMinusInfinitydB<double> <= -384.0_dB);
 }
 
 
