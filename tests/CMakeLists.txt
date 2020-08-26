@@ -16,7 +16,7 @@ else()
   add_definitions(-Wall -Wextra -Wconversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wcast-qual -Wunused -Woverloaded-virtual -Wno-noexcept-type -Wpedantic)
 endif()
 
-add_executable(UnitsTests ../TestMain.cpp ../UnitsTests.cpp)
+add_executable(UnitsTests ${CMAKE_CURRENT_LIST_DIR}/TestMain.cpp ${CMAKE_CURRENT_LIST_DIR}/UnitsTests.cpp)
 target_link_libraries(UnitsTests Catch2::Catch2)
 
-include(Catch)
+#include(Catch)
