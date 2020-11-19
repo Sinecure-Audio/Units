@@ -6,7 +6,8 @@
 
 TEST_CASE("Unit Creation", "[Units]") {
 	const Decibel<float> d(0.0f);
-	REQUIRE(d.count() == 0.0f);
+    //Use with abs because rel gets weird with 0
+	REQUIRE_THAT(d.count(), Catch::WithinAbs(0.0f, .00001));
 }
 
 TEST_CASE("Unit Addition", "[Units]") {
@@ -40,8 +41,8 @@ TEST_CASE("Unit Division", "[Units]") {
 TEST_CASE("Unit Modulo", "[Units]") {
 	const Decibel<float> d(5.0f);
 	const Decibel<float> e(4.0f);
-	REQUIRE(d%e == Decibel<float>(1.0f));
-	REQUIRE(e%d == Decibel<float>(4.0f));
+	REQUIRE_THAT((d%e).count(), Catch::WithinRel(1.0f));
+    REQUIRE_THAT((e%d).count(), Catch::WithinRel(4.0f));
 }
 
 TEST_CASE("Unit Negation", "[Units]") {
@@ -227,7 +228,7 @@ TEST_CASE("Decibel Subtraction", "[Decibels]") {
 	const Decibel<float> d = 0.0_dB;
 	using UnderlyingType = decltype(d.count());
 	if constexpr(std::numeric_limits<UnderlyingType>::has_infinity)//subtracting two identical dbfs values should result in -inf or something really close
-		REQUIRE((d-d).count() == std::numeric_limits<UnderlyingType>::infinity()*UnderlyingType{-1});
+		REQUIRE((d-d) == d.getMinusInfinityDB());
 	else
 		REQUIRE((d-d).count() == std::numeric_limits<UnderlyingType>::min());
 }
@@ -243,10 +244,16 @@ TEST_CASE("Decibel Division", "[Decibels]") {
 }
 
 TEST_CASE("-inf dB", "[Decibels]") {
-	REQUIRE_THAT(defaultMinusInfinitydB<float>.count(), Catch::WithinRel(-192.0f));
-	REQUIRE_THAT(defaultMinusInfinitydB<double>.count(), Catch::WithinRel(-384.0f));
+	REQUIRE_THAT(Decibel<float>{0}.getDefaultMinusInifinityDB().count(), Catch::WithinRel(-192.0f));
+    REQUIRE_THAT(Decibel<float>{0}.getMinusInfinityDB().count(), Catch::WithinRel(-192.0f));
 
-	REQUIRE(!Catch::WithinRel(0.0f).match(Amplitude<double>::convertDecibelToAmplitude(-193.0f)));
+	REQUIRE_THAT(Decibel<double>{0}.getDefaultMinusInifinityDB().count(), Catch::WithinRel(-384.0f));
+    REQUIRE_THAT(Decibel<double>{0}.getMinusInfinityDB().count(), Catch::WithinRel(-384.0f));
+
+    const auto inf = Decibel<float>{-193.0f};
+    const auto a = Amplitude<double>::convertDecibelToAmplitude(Decibel<float>{-193.0f});
+
+	REQUIRE_THAT(a, Catch::WithinAbs(0.0f, .00001f));
 }
 
 TEST_CASE("Decibel String Conversion", "[Decibels]") {

@@ -3,73 +3,75 @@
 #include <type_traits>
 #include <string>
 
-template <template<typename> class UnitType, typename InputType>
+template <template<typename> class UnitTemplate, typename NumericType>
 class Unit
 {
 public:
-	constexpr Unit(const InputType& initialValue) noexcept(noexcept(std::is_nothrow_constructible_v<InputType>)) : value(initialValue) {}
+	constexpr Unit(const NumericType& initialValue) noexcept(noexcept(std::is_nothrow_constructible_v<NumericType>)) : value(initialValue) {}
 
-	constexpr auto operator-()  const noexcept { return UnitType<InputType>(value * InputType{-1}); }
+	constexpr auto operator-()  const noexcept { return UnitTemplate<NumericType>(value * NumericType{-1}); }
 
-	constexpr InputType count() const noexcept {return value;}
+	constexpr NumericType count() const noexcept {return value;}
+//    constexpr NumericType& count() noexcept {return value;}
+//    constexpr const NumericType& count() const noexcept {return value;}
 
 	template<typename T>
-	constexpr auto operator+= (const UnitType<T>& other) noexcept(noexcept(std::declval<InputType>() + std::declval<InputType>()) && std::is_nothrow_assignable_v<InputType, T>) { value += other.count(); return *this; }
+	constexpr auto operator+= (const UnitTemplate<T>& other) noexcept(noexcept(std::declval<NumericType>() + std::declval<NumericType>()) && std::is_nothrow_assignable_v<NumericType, T>) { value += other.count(); return *this; }
 	template<typename T>
-	constexpr auto operator-= (const UnitType<T>& other) noexcept(noexcept(std::declval<InputType>() - std::declval<InputType>()) && std::is_nothrow_assignable_v<InputType, T>) { value -= other.count(); return *this; }
+	constexpr auto operator-= (const UnitTemplate<T>& other) noexcept(noexcept(std::declval<NumericType>() - std::declval<NumericType>()) && std::is_nothrow_assignable_v<NumericType, T>) { value -= other.count(); return *this; }
 
 	// operators * and / work with normal types and not units to avoid having to deal with multiple dimensions of units.
 	template<typename T>
-	constexpr auto operator*= (const T& other)           noexcept(noexcept(std::declval<InputType>() * std::declval<T>()) && std::is_nothrow_assignable_v<InputType, T>) { value *= other; return *this; }
+	constexpr auto operator*= (const T& other)           noexcept(noexcept(std::declval<NumericType>() * std::declval<T>()) && std::is_nothrow_assignable_v<NumericType, T>) { value *= other; return *this; }
 	template<typename T>
-	constexpr auto operator/= (const T& other) 			 noexcept(noexcept(std::declval<InputType>() / std::declval<T>()) && std::is_nothrow_assignable_v<InputType, T>) { value /= other; return *this; }
+	constexpr auto operator/= (const T& other) 			 noexcept(noexcept(std::declval<NumericType>() / std::declval<T>()) && std::is_nothrow_assignable_v<NumericType, T>) { value /= other; return *this; }
 	template<typename T>
-	constexpr auto operator%= (const UnitType<T>& other) {
-		if constexpr (std::is_integral_v<InputType> && std::is_integral_v<T>)
+	constexpr auto operator%= (const UnitTemplate<T>& other) {
+		if constexpr (std::is_integral_v<NumericType> && std::is_integral_v<T>)
 			value %= other.count();
 		else
-			value = static_cast<InputType>(fmod(value, other.count()));
+			value = static_cast<NumericType>(fmod(value, other.count()));
 		return *this;
 	}
 
 	template<typename T>
-	constexpr auto operator^= (const T& other) noexcept(noexcept(std::declval<InputType>() ^ std::declval<T>()) && std::is_nothrow_assignable_v<InputType, T>) { value ^= other; return *this; }
+	constexpr auto operator^= (const T& other) noexcept(noexcept(std::declval<NumericType>() ^ std::declval<T>()) && std::is_nothrow_assignable_v<NumericType, T>) { value ^= other; return *this; }
 
 	template<typename T>
-	constexpr auto operator&= (const T& other) noexcept(noexcept(std::declval<InputType>() & std::declval<T>()) && std::is_nothrow_assignable_v<InputType, T>) { value &= other; return *this; }
+	constexpr auto operator&= (const T& other) noexcept(noexcept(std::declval<NumericType>() & std::declval<T>()) && std::is_nothrow_assignable_v<NumericType, T>) { value &= other; return *this; }
 
 	template<typename T>
-	constexpr auto operator|= (const T other)  noexcept(noexcept(std::declval<InputType>() | std::declval<T>()) && std::is_nothrow_assignable_v<InputType, T>) { value |= other; return *this; }
+	constexpr auto operator|= (const T other)  noexcept(noexcept(std::declval<NumericType>() | std::declval<T>()) && std::is_nothrow_assignable_v<NumericType, T>) { value |= other; return *this; }
 
 	constexpr auto operator++(int) {
-		const auto out{UnitType<InputType>{value}};
+		const auto out{UnitTemplate<NumericType>{value}};
 		value++;
 		return out;
 	}
 
 	constexpr auto operator--(int) {
-		auto out{UnitType<InputType>(value)};
+		auto out{UnitTemplate<NumericType>(value)};
 		value--;
 		return out;
 	}
 
 	constexpr auto& operator++() {
 		++value;
-		return *static_cast<UnitType<InputType>*>(this);
+		return *static_cast<UnitTemplate<NumericType>*>(this);
 	}
 
 	constexpr auto& operator--() 	{
 		--value;
-		return *static_cast<UnitType<InputType>*>(this);
+		return *static_cast<UnitTemplate<NumericType>*>(this);
 	}
 
 
-	constexpr auto operator~ () noexcept(noexcept(~std::declval<InputType>())) { return UnitType<InputType>(~value); }
+	constexpr auto operator~ () noexcept(noexcept(~std::declval<NumericType>())) { return UnitTemplate<NumericType>(~value); }
 
 	operator std::string() const { return std::to_string(value); }
 
 protected:
-	InputType value{ 0 };
+	NumericType value{ 0 };
 };
 
 template <template<typename> class T, typename U, typename V>
