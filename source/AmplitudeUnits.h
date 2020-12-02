@@ -81,7 +81,7 @@ public:
 	template<typename T>
 	constexpr Decibel(const Amplitude<T>& amplitudeValue)
 	noexcept(std::is_nothrow_constructible_v<NumericType, T>)
-	: Unit<Decibel, NumericType>(convertAmplitudeToDecibelValue(amplitudeValue.count())) {}
+	: Unit<Decibel, NumericType>(convertAmplitudeToDecibelValue(static_cast<NumericType>(amplitudeValue.count()))) {}
 
 
     static constexpr auto getDefaultMinusInifinityDB () noexcept {
@@ -154,7 +154,7 @@ constexpr auto operator+(const Decibel<T>& lhs, const Decibel<U>& rhs){
         if(isinf(c))
             return Decibel<T>(lhs.getMinusInfinityDB());
         else
-            return Decibel<T>{ c };
+            return Decibel<T>(c);
     }
 }
 
