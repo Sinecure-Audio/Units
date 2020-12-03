@@ -7,6 +7,8 @@ template <template<typename> class UnitTemplate, typename NumericType>
 class Unit
 {
 public:
+    constexpr Unit() = default;
+
 	constexpr Unit(const NumericType& initialValue) noexcept(noexcept(std::is_nothrow_constructible_v<NumericType>)) : value(initialValue) {}
 
 	constexpr auto operator-()  const noexcept { return UnitTemplate<NumericType>(value * NumericType{-1}); }

@@ -2,6 +2,7 @@
 
 #include "UnitBase.h"
 #include <cmath>
+#include <ostream>
 
 template <typename NumericType>
 class Decibel;
@@ -150,7 +151,7 @@ constexpr auto operator+(const Decibel<T>& lhs, const Decibel<U>& rhs){
     if(isinf(b))
         return Decibel<T>(lhs.getMinusInfinityDB());
     else {
-        const auto c = 10 * std::log (a + b);
+        const auto c = 10 * std::log10 (a + b);
         if(isinf(c))
             return Decibel<T>(lhs.getMinusInfinityDB());
         else
@@ -160,22 +161,32 @@ constexpr auto operator+(const Decibel<T>& lhs, const Decibel<U>& rhs){
 
 template <typename T, typename U>
 constexpr Decibel<T> operator-(const Decibel<T>& lhs, const Decibel<U>& rhs){
-    const auto a = Amplitude<T>{lhs};
-    const auto b = Amplitude<U>{rhs};
-    auto sign = std::signbit(Amplitude<T>{lhs}.count()-Amplitude<U>{rhs}.count()) ? -T{1} : T{1};
-    return sign*Decibel<T>{ Amplitude<T>{lhs}-Amplitude<U>{rhs} };
-//    }
+    const auto a = std::pow(T{10}, lhs.count()/T{10});
+    if(isinf(a))
+        return Decibel<T>(lhs.getMinusInfinityDB());
+
+    const auto b = std::pow(U{10}, rhs.count()/U{10});
+    if(isinf(b))
+        return Decibel<T>(lhs.getMinusInfinityDB());
+    else {
+        const auto c = 10 * std::log (a - b);
+        if(isinf(c))
+            return Decibel<T>(lhs.getMinusInfinityDB());
+        else
+            return Decibel<T>(c);
+    }
 }
 
-template <typename T, typename U>
-constexpr auto operator*(const Decibel<T>& lhs, const Decibel<U>& rhs){
-	const auto newValue = lhs.count()+rhs.count();
-	return Decibel<std::decay_t<decltype(newValue)>>{newValue};
-}
+//template <typename T, typename U>
+//constexpr auto operator*(const Decibel<T>& lhs, const Decibel<U>& rhs){
+//	const auto newValue = lhs.count()+rhs.count();
+//	return Decibel<std::decay_t<decltype(newValue)>>{newValue};
+//}
 
 template <typename T, typename U>
 constexpr auto operator*(const Decibel<T>& lhs, const U& rhs){
-    const Amplitude<T> newValue = Amplitude<T>{lhs}*rhs;
+    const auto b = std::log10(rhs);
+    const auto newValue = lhs.count()+T{10}*b;//T{10}*(std::log10(a)+b);
     return Decibel<T>{newValue};
 }
 
@@ -186,20 +197,16 @@ constexpr auto operator*(const T& lhs, const Decibel<U>& rhs){
 
 template <typename T, typename U>
 constexpr auto operator/(const Decibel<T>& lhs, const U& rhs){
-    const Amplitude<T> newValue = Amplitude<T>{lhs}/rhs;
+    const auto b = std::log10(rhs);
+    const auto newValue = lhs.count()-T{10}*b;//T{10}*(std::log10(a)+b);
     return Decibel<T>{newValue};
 }
 
-template <typename T, typename U>
-constexpr auto operator/(const T& lhs, const Decibel<U>& rhs){
-    return rhs/lhs;
-}
-
-template <typename T, typename U>
-constexpr auto operator/(const Decibel<T>& lhs, const Decibel<U>& rhs){
-	const auto newValue = lhs.count()-rhs.count();
-	return Decibel<std::decay_t<decltype(newValue)>>{newValue};
-}
+//template <typename T, typename U>
+//constexpr auto operator/(const Decibel<T>& lhs, const Decibel<U>& rhs){
+//	const auto newValue = lhs.count()-rhs.count();
+//	return Decibel<std::decay_t<decltype(newValue)>>{newValue};
+//}
 
 //user defined litereals for making decibel templates
 constexpr auto operator"" _dB(long double val) {
