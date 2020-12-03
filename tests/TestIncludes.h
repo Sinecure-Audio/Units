@@ -1,8 +1,6 @@
-//
-// Created by Me on 12/2/2020.
-//
+#pragma once
 
-#ifndef UNITS_TESTS_TESTINCLUDES_H
-#define UNITS_TESTS_TESTINCLUDES_H
+#include <catch2/catch.hpp>
+#include "../include/Units.h"
 
-#endif //UNITS_TESTS_TESTINCLUDES_H
+using TestType = float;
