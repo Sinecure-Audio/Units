@@ -7,10 +7,10 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }} 
+    runs-on: ${{ matrix.config.os }} 
     strategy:
       matrix:
-        cfg:
+        config:
           - { os: ubuntu-20.04, name: Ubuntu 20 gcc 7 Debug,      cc: gcc-7.5,  cxx: g++-7.5,  build_type: Debug }
           - { os: ubuntu-20.04, name: Ubuntu 20 gcc 7 Release,    cc: gcc-7.5,  cxx: g++-7.5,  build_type: Release }
           - { os: ubuntu-20.04, name: Ubuntu 20 gcc 8 Debug,      cc: gcc-8.4,  cxx: g++-8.4,  build_type: Debug }
@@ -40,14 +40,14 @@ jobs:
         path: Catch2
 
     - name: Install Catch (*nix)
-      if: matrix.os != 'windows-latest'
+      if: matrix.config.os != 'windows-latest'
       run: |
         cd Catch2
         cmake -Bbuild -S. -DBUILD_TESTING=OFF
         sudo cmake --build build/ --target install
 
     - name: Install Catch (Windows)
-      if: matrix.os == 'windows-latest'
+      if: matrix.config.os == 'windows-latest'
       run: |
         cd Catch2
         cmake -Bbuild -S. -DBUILD_TESTING=OFF
@@ -61,33 +61,33 @@ jobs:
 
     - name: Configure CMake (Windows)
       working-directory: ${{runner.workspace}}/build
-      if: matrix.os == 'windows-latest'
+      if: matrix.config.os == 'windows-latest'
       # Note the current convention is to use the -S and -B options here to specify source 
       # and build directories, but this is only available with CMake 3.13 and higher.  
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
-      run: cmake ${{runner.workspace}}/Units/main/tests -DCMAKE_BUILD_TYPE="${{ matrix.build-type }}"
+      run: cmake ${{runner.workspace}}/Units/main/tests -DCMAKE_BUILD_TYPE="${{ matrix.config.build-type }}"
 
     - name: Configure CMake (*nix)
       working-directory: ${{runner.workspace}}/build
-      if: matrix.os != 'windows-latest'
+      if: matrix.config.os != 'windows-latest'
       # Note the current convention is to use the -S and -B options here to specify source 
       # and build directories, but this is only available with CMake 3.13 and higher.  
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
-      run: cmake ${{runner.workspace}}/Units/main/tests -DCMAKE_BUILD_TYPE="${{ matrix.build-type }}" -DCMAKE_CXX_COMPILER="${{ matrix.cxx }}"
+      run: cmake ${{runner.workspace}}/Units/main/tests -DCMAKE_BUILD_TYPE="${{ matrix.config.build-type }}" -DCMAKE_CXX_COMPILER="${{ matrix.config.cxx }}"
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
       # Execute the build.  You can specify a specific target with "--target <NAME>"
-      run: cmake --build . --config "${{ matrix.build-type }}"
+      run: cmake --build . --config "${{ matrix.config.build-type }}"
 
     - name: Test (*nix)
       working-directory: ${{runner.workspace}}/build
-      if: matrix.os != 'windows-latest'
+      if: matrix.config.os != 'windows-latest'
       # Execute tests defined by the CMake configuration. 
-      run: cmake --build . --config "${{ matrix.build-type }}" --target test
+      run: cmake --build . --config "${{ matrix.config.build-type }}" --target test
 
     - name: Test (Windows)
       working-directory: ${{runner.workspace}}/build
-      if: matrix.os == 'windows-latest'
+      if: matrix.config.os == 'windows-latest'
       # Execute tests defined by the CMake configuration. 
-      run: cmake --build . --config "${{ matrix.build-type }}" --target RUN_TESTS
+      run: cmake --build . --config "${{ matrix.config.build-type }}" --target RUN_TESTS
