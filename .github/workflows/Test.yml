@@ -5,9 +5,9 @@ on:
   # pull_request:
   #   branches: [ master ]
 
-env:
-  if: ${{ matrix.os }}  != "windows-latest"
-  SUDO_ALIAS: sudo
+# env:
+#   if: ${{ matrix.os }}  != "windows-latest"
+#   SUDO_ALIAS: sudo
 #   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
 #   BUILD_TYPE: Debug
 
@@ -34,11 +34,19 @@ jobs:
         ref: 'v2.x'
         path: Catch2
 
-    - name: Install Catch
+    - name: Install Catch (*nix)
+      if: matrix.os != 'windows-latest'
       run: |
         cd Catch2
         cmake -Bbuild -H. -DBUILD_TESTING=OFF
-        ${{SUDO_ALIAS}} cmake --build build/ --target install
+        sudo cmake --build build/ --target install
+
+    - name: Install Catch (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        cd Catch2
+        cmake -Bbuild -H. -DBUILD_TESTING=OFF
+        cmake --build build/ --target install
       
 
     - name: Create Build Environment
