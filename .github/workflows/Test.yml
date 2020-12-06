@@ -56,6 +56,16 @@ jobs:
       # We'll use this as our working directory for all subsequent commands
       run: cmake -E make_directory ${{runner.workspace}}/build
 
+    - name: List dir
+      working-directory: ${{runner.workspace}}/build
+      run: ls -l .
+
+    - name: List parent dir
+      working-directory: ${{runner.workspace}}/build
+      run: |
+        cd ../
+        ls -l .
+
     - name: Configure CMake
       working-directory: ${{runner.workspace}}/build
       # Note the current convention is to use the -S and -B options here to specify source 
@@ -63,7 +73,7 @@ jobs:
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
       run: |
         ls -l .
-        cmake ../tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} 
+        cmake ../Units/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} 
       # cmake $GITHUB_WORKSPACE/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} 
 
     - name: Build
