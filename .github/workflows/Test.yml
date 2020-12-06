@@ -33,12 +33,12 @@ jobs:
         path: Catch2
 
     - name: Install Catch
-      if: ${{ ${{ matrix.os }}  == "windows=latest" }}
+      if: ${{ matrix.os }}  == "windows=latest"
       run: |
         cd Catch2
         cmake -Bbuild -H. -DBUILD_TESTING=OFF
         cmake --build build/ --target install
-      if: ${{ ${{ matrix.os }}  == "windows=latest" }}
+      if: ${{ matrix.os }}  == "windows=latest"
       run: |
         cd Catch2
         cmake -Bbuild -H. -DBUILD_TESTING=OFF
