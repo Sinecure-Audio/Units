@@ -35,8 +35,6 @@ jobs:
           - { os: ubuntu-18.04, name: Ubuntu 18 gcc 9 Release,    cc: gcc-9.3,  cxx: g++-9,        build_type: Release }
           - { os: ubuntu-18.04, name: Ubuntu 18 gcc 10 Debug,     cc: gcc-10.2, cxx: g++-10,       build_type: Debug }
           - { os: ubuntu-18.04, name: Ubuntu 18 gcc 10 Release,   cc: gcc-10.2, cxx: g++-10,       build_type: Release }
-          - { os: ubuntu-18.04, name: Ubuntu 18 clang 6 Debug,    cc: clang-6, cxx: clang++-6,     build_type: Debug }
-          - { os: ubuntu-18.04, name: Ubuntu 18 clang 6 Release,  cc: clang-6, cxx: clang++-6,     build_type: Release }
           - { os: ubuntu-18.04, name: Ubuntu 18 clang 8 Debug,    cc: clang-8,  cxx: clang++-8,    build_type: Debug }
           - { os: ubuntu-18.04, name: Ubuntu 18 clang 8 Release,  cc: clang-8,  cxx: clang++-8,    build_type: Release } 
           - { os: ubuntu-18.04, name: Ubuntu 18 clang 9 Debug,    cc: clang-9,  cxx: clang++-9,    build_type: Debug }
@@ -48,8 +46,6 @@ jobs:
           - { os: ubuntu-16.04, name: Ubuntu 16 gcc 8 Release,    cc: gcc-8.4,  cxx: g++-8,    build_type: Release }
           - { os: ubuntu-16.04, name: Ubuntu 16 gcc 9 Debug,      cc: gcc-9.3,  cxx: g++-9,    build_type: Debug }
           - { os: ubuntu-16.04, name: Ubuntu 16 gcc 9 Release,    cc: gcc-9.3,  cxx: g++-9,    build_type: Release }
-          - { os: ubuntu-18.04, name: Ubuntu 18 clang 6 Debug,  cc: clang-6, cxx: clang++-6,     build_type: Debug }
-          - { os: ubuntu-18.04, name: Ubuntu 18 clang 6 Release,    cc: clang-6,  cxx: clang++-6,    build_type: Release }
           - { os: ubuntu-16.04, name: Ubuntu 16 clang 8 Debug,    cc: clang-8,  cxx: clang++-8,    build_type: Debug }
           - { os: ubuntu-16.04, name: Ubuntu 16 clang 8 Release,  cc: clang-8,  cxx: clang++-8,    build_type: Release } 
           - { os: ubuntu-16.04, name: Ubuntu 16 clang 9 Debug,    cc: clang-9,  cxx: clang++-9,    build_type: Debug }
