@@ -6,7 +6,7 @@ on:
   #   branches: [ master ]
 
 env:
-  if: ${{ ${{ runner.os }}  != "Windows" }}
+  if: ${{ runner.os }}  != "Windows"
   SUDO_ALIAS: sudo
 #   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
 #   BUILD_TYPE: Debug
