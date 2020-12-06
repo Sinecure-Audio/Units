@@ -68,7 +68,7 @@ jobs:
       # Note the current convention is to use the -S and -B options here to specify source 
       # and build directories, but this is only available with CMake 3.13 and higher.  
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
-      run: cmake ${{runner.workspace}}/Units/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
+      run: cmake ${{runner.workspace}}/Units/main/tests -DCMAKE_BUILD_TYPE="${{ matrix.build-type }}"
 
     - name: Configure CMake (*nix)
       working-directory: ${{runner.workspace}}/build
@@ -76,22 +76,21 @@ jobs:
       # Note the current convention is to use the -S and -B options here to specify source 
       # and build directories, but this is only available with CMake 3.13 and higher.  
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
-      run: cmake ${{runner.workspace}}/Units/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx }} 
+      run: cmake ${{runner.workspace}}/Units/main/tests -DCMAKE_BUILD_TYPE="${{ matrix.build-type }}" -DCMAKE_CXX_COMPILER="${{ matrix.cxx }}"
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
       # Execute the build.  You can specify a specific target with "--target <NAME>"
-      run: cmake --build . --config $BUILD_TYPE
-
+      run: cmake --build . --config "${{ matrix.build-type }}"
 
     - name: Test (*nix)
       working-directory: ${{runner.workspace}}/build
       if: matrix.os != 'windows-latest'
       # Execute tests defined by the CMake configuration. 
-      run: cmake --build . --config $BUILD_TYPE --target test
+      run: cmake --build . --config "${{ matrix.build-type }}" --target test
 
     - name: Test (Windows)
       working-directory: ${{runner.workspace}}/build
       if: matrix.os == 'windows-latest'
       # Execute tests defined by the CMake configuration. 
-      run: cmake --build . --config $BUILD_TYPE --target RUN_TESTS
+      run: cmake --build . --config "${{ matrix.build-type }}" --target RUN_TESTS
