@@ -58,7 +58,7 @@ jobs:
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: |
         ls -l .
-        cat makefile
+        cat Makefile
         cmake --build .
       # cmake --build . --config $BUILD_TYPE
 
