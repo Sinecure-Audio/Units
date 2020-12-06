@@ -2,8 +2,10 @@ name: Run_Tests
 
 on: 
   push:
-  pull_request:
-    branches: [ master ]
+  # pull_request:
+  #   branches: [ master ]
+
+workflow_dispatch:
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -26,12 +28,13 @@ jobs:
     - name: Configure CMake
       # Use a bash shell so we can use the same syntax for environment variable
       # access regardless of the host operating system
-      shell: bash
+      # shell: bash
       working-directory: ${{runner.workspace}}/build
       # Note the current convention is to use the -S and -B options here to specify source 
       # and build directories, but this is only available with CMake 3.13 and higher.  
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      run: cmake $GITHUB_WORKSPACE/tests -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      # run: cmake ${{runner.workspace}}/build
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
