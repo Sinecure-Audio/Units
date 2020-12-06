@@ -28,11 +28,6 @@ jobs:
         ref: 'v2.x'
         path: Catch2
 
-    - name: Check Units Folder Contents
-      run: |
-        cd $GITHUB_WORKSPACE
-        ls -l ./main
-
     - name: Install Catch
       run: |
         cd Catch2
@@ -60,7 +55,8 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       # shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
-      run: cmake --build . --config $BUILD_TYPE
+      # run: cmake --build . --config $BUILD_TYPE
+      run: cmake --build .
 
     - name: Test
       working-directory: ${{runner.workspace}}/build
