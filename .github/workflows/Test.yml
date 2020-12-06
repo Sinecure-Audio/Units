@@ -52,7 +52,7 @@ jobs:
         ls
         ls ../
         ls $GITHUB_WORKSPACE
-        ls $GITHUB_WORKSPACE../
+        ls $GITHUB_WORKSPACE/../
         cmake $GITHUB_WORKSPACE/tests -DCMAKE_BUILD_TYPE=$BUILD_TYPE
       # run: cmake ${{runner.workspace}}/build
 
