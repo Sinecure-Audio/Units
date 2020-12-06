@@ -18,8 +18,8 @@ jobs:
     runs-on: ${{ matrix.os }} 
     strategy:
       matrix:
-      # os: [ubuntu-20.04, ubuntu-18.04, windows-latest, macos-10.15, macos-11.0]        
-        os: [windows-latest]        
+      os: [ubuntu-20.04, ubuntu-18.04, windows-latest, macos-10.15, macos-11.0]        
+      # os: [windows-latest]        
         build-type: [Debug, Release]
 
     steps:
@@ -55,12 +55,6 @@ jobs:
       # We'll use this as our working directory for all subsequent commands
       run: cmake -E make_directory ${{runner.workspace}}/build
 
-    - name: List dir
-      working-directory: ${{runner.workspace}}/build
-      run: |
-        cd ./
-        ls -l .
-
     - name: Configure CMake 
       working-directory: ${{runner.workspace}}/build
       # Note the current convention is to use the -S and -B options here to specify source 
@@ -71,12 +65,6 @@ jobs:
       # run: cmake ../Units/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}      
       # cmake $GITHUB_WORKSPACE/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} 
       # cmake $GITHUB_WORKSPACE/Units/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
-
-    - name: List dir after config
-      working-directory: ${{runner.workspace}}/build
-      run: |
-        cd ./
-        ls -l . 
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
