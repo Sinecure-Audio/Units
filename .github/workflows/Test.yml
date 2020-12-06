@@ -9,22 +9,28 @@ jobs:
   build:
     runs-on: ${{ matrix.config.os }} 
     strategy:
+      fail-fast: false
       matrix:
         config:
-          - { os: ubuntu-20.04, name: Ubuntu 20 gcc 7 Debug,      cc: gcc-7.5,  cxx: g++-7.5,  build_type: Debug }
-          - { os: ubuntu-20.04, name: Ubuntu 20 gcc 7 Release,    cc: gcc-7.5,  cxx: g++-7.5,  build_type: Release }
-          - { os: ubuntu-20.04, name: Ubuntu 20 gcc 8 Debug,      cc: gcc-8.4,  cxx: g++-8.4,  build_type: Debug }
-          - { os: ubuntu-20.04, name: Ubuntu 20 gcc 8 Release,    cc: gcc-8.4,  cxx: g++-8.4,  build_type: Release }
-          - { os: ubuntu-20.04, name: Ubuntu 20 gcc 9 Debug,      cc: gcc-9.3,  cxx: g++-9.3,  build_type: Debug }
-          - { os: ubuntu-20.04, name: Ubuntu 20 gcc 9 Release,    cc: gcc-9.3,  cxx: g++-9.3,  build_type: Release }
-          - { os: ubuntu-20.04, name: Ubuntu 20 gcc 10 Debug,     cc: gcc-10.2, cxx: g++-10.2, build_type: Debug }
-          - { os: ubuntu-20.04, name: Ubuntu 20 gcc 10 Release,   cc: gcc-10.2, cxx: g++-10.2, build_type: Release }
-          - { os: ubuntu-20.04, name: Ubuntu 20 clang 8 Debug,    cc: clang-8,  cxx: g++-8,    build_type: Debug }
-          - { os: ubuntu-20.04, name: Ubuntu 20 clang 8 Release,  cc: clang-8,  cxx: g++-8,    build_type: Release }
-          - { os: ubuntu-20.04, name: Ubuntu 20 clang 9 Debug,    cc: clang-9,  cxx: g++-9,    build_type: Debug }
-          - { os: ubuntu-20.04, name: Ubuntu 20 clang 9 Release,  cc: clang-9,  cxx: g++-9,    build_type: Release }
-          - { os: ubuntu-20.04, name: Ubuntu 20 clang 10 Debug,   cc: clang-10, cxx: g++-10,   build_type: Debug }
-          - { os: ubuntu-20.04, name: Ubuntu 20 clang 10 Release, cc: clang-10, cxx: g++-10,   build_type: Release }      
+          - { os: ubuntu-20.04, name: Ubuntu 20 gcc 7 Debug,      cc: gcc-7.5,  cxx: g++-7.5,    build_type: Debug }
+          - { os: ubuntu-20.04, name: Ubuntu 20 gcc 7 Release,    cc: gcc-7.5,  cxx: g++-7.5,    build_type: Release }
+          - { os: ubuntu-20.04, name: Ubuntu 20 gcc 8 Debug,      cc: gcc-8.4,  cxx: g++-8.4,    build_type: Debug }
+          - { os: ubuntu-20.04, name: Ubuntu 20 gcc 8 Release,    cc: gcc-8.4,  cxx: g++-8.4,    build_type: Release }
+          - { os: ubuntu-20.04, name: Ubuntu 20 gcc 9 Debug,      cc: gcc-9.3,  cxx: g++-9.3,    build_type: Debug }
+          - { os: ubuntu-20.04, name: Ubuntu 20 gcc 9 Release,    cc: gcc-9.3,  cxx: g++-9.3,    build_type: Release }
+          - { os: ubuntu-20.04, name: Ubuntu 20 gcc 10 Debug,     cc: gcc-10.2, cxx: g++-10.2,   build_type: Debug }
+          - { os: ubuntu-20.04, name: Ubuntu 20 gcc 10 Release,   cc: gcc-10.2, cxx: g++-10.2,   build_type: Release }
+          - { os: ubuntu-20.04, name: Ubuntu 20 clang 8 Debug,    cc: clang-8,  cxx: clang-8,    build_type: Debug }
+          - { os: ubuntu-20.04, name: Ubuntu 20 clang 8 Release,  cc: clang-8,  cxx: clang-8,    build_type: Release }
+          - { os: ubuntu-20.04, name: Ubuntu 20 clang 9 Debug,    cc: clang-9,  cxx: clang-9,    build_type: Debug }
+          - { os: ubuntu-20.04, name: Ubuntu 20 clang 9 Release,  cc: clang-9,  cxx: clang-9,    build_type: Release }
+          - { os: ubuntu-20.04, name: Ubuntu 20 clang 10 Debug,   cc: clang-10, cxx: clang-10,   build_type: Debug }
+          - { os: ubuntu-20.04, name: Ubuntu 20 clang 10 Release, cc: clang-10, cxx: clang-10,   build_type: Release }   
+
+          - { os: windows-latest, name: Windows cl Debug,      cc: cl,       cxx: cl,         build_type: Debug }
+          - { os: windows-latest, name: Windows cl Release,    cc: cl,       cxx: cl,         build_type: Release }
+          - { os: windows-latest, name: Windows clang Debug,   cc: clang-cl, cxx: clang-cl,   build_type: Debug }
+          - { os: windows-latest, name: Windows clang Release, cc: clang-cl, cxx: clang-cl,   build_type: Release }      
 
     steps:
     - name: Checkout repo
