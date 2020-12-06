@@ -49,11 +49,11 @@ jobs:
       # and build directories, but this is only available with CMake 3.13 and higher.  
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
       run: |
-      ls
-      ls ../
-      ls $GITHUB_WORKSPACE
-      ls $GITHUB_WORKSPACE../
-      cmake $GITHUB_WORKSPACE/tests -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+        ls
+        ls ../
+        ls $GITHUB_WORKSPACE
+        ls $GITHUB_WORKSPACE../
+        cmake $GITHUB_WORKSPACE/tests -DCMAKE_BUILD_TYPE=$BUILD_TYPE
       # run: cmake ${{runner.workspace}}/build
 
     - name: Build
