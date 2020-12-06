@@ -92,4 +92,5 @@ jobs:
     - name: Test
       working-directory: ${{runner.workspace}}/build
       # Execute tests defined by the CMake configuration. 
-      run: cmake --build . --config $BUILD_TYPE --target test
+      run: cmake --build . --config $BUILD_TYPE --target RUN_TESTS
+    # run: cmake --build . --config $BUILD_TYPE --target test
