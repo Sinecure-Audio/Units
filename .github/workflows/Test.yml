@@ -24,7 +24,8 @@ jobs:
     - name: Checkout Catch
       uses: actions/checkout@v2
       with:
-        repository: https://github.com/catchorg/Catch2.git
+        repository: 'catchorg/Catch2'
+        ref: 'v2.x'
         path: Catch2
 
     - name: Install Catch
