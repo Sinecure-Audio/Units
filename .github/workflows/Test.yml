@@ -13,7 +13,11 @@ jobs:
   build:
     # The CMake configure and build commands are platform agnostic and should work equally
     # well on Windows or Mac. 
-    runs-on: ubuntu-latest
+    runs-on: 
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, ubuntu-18.04]
+        cxx: [g++, clang++]
 
     steps:
     - name: Checkout repo
@@ -49,7 +53,7 @@ jobs:
     - name: Build
       working-directory: ${{runner.workspace}}/build
       # Execute the build.  You can specify a specific target with "--target <NAME>"
-      run: cmake --build . --config $BUILD_TYPE
+      run: cmake --build . --config $BUILD_TYPE -DCMAKE_CXX_COMPILER=$cxx
 
 
     - name: Test
