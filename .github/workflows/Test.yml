@@ -5,21 +5,25 @@ on:
   # pull_request:
   #   branches: [ master ]
 
-# env:
-#   if: ${{ matrix.os }}  != "windows-latest"
-#   SUDO_ALIAS: sudo
-#   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-#   BUILD_TYPE: Debug
-
 jobs:
   build:
-    # The CMake configure and build commands are platform agnostic and should work equally
-    # well on Windows or Mac. 
     runs-on: ${{ matrix.os }} 
     strategy:
       matrix:
         os: [ubuntu-20.04, ubuntu-18.04, windows-latest, macos-10.15, macos-11.0]        
         build-type: [Debug, Release]
+        include:
+        - os: ubuntu-20.04
+          cxx: [g++ 7.5, g++ 8.4, g++ 9.3, g++ 10.2, clang++ 8.0.1, clang++ 9.0, clang++ 10.0.1]
+        - os: ubuntu-18.04
+          cxx: [g++ 7.5, g++ 8.4, g++ 9.3, g++ 10.1, clang++ 6.0, clang++ 8.0, clang++ 9.0]
+        - os: ubuntu-16.04
+          cxx: [g++ 7.5, g++ 8.4, g++ 9.3, clang++ 6.0, clang++ 8.0, clang++ 9.0]
+        - os: macos-10.15
+          cxx: [g++ 7.5, g++ 8.4, g++ 9.3, g++ 10.1, clang++ 6.0, clang++ 8.0, clang++ 9.0]
+        - os: macos-11.0
+          cxx: [cxx, gcc-8, gcc-9, clang++]
+          
 
     steps:
     - name: Checkout repo
@@ -54,16 +58,21 @@ jobs:
       # We'll use this as our working directory for all subsequent commands
       run: cmake -E make_directory ${{runner.workspace}}/build
 
-    - name: Configure CMake 
+    - name: Configure CMake (Windows)
       working-directory: ${{runner.workspace}}/build
+      if: matrix.os == 'windows-latest'
       # Note the current convention is to use the -S and -B options here to specify source 
       # and build directories, but this is only available with CMake 3.13 and higher.  
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
       run: cmake ${{runner.workspace}}/Units/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
-      #Windows command
-      # run: cmake ../Units/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}      
-      # cmake $GITHUB_WORKSPACE/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} 
-      # cmake $GITHUB_WORKSPACE/Units/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
+
+    - name: Configure CMake (*nix)
+      working-directory: ${{runner.workspace}}/build
+      if: matrix.os != 'windows-latest'
+      # Note the current convention is to use the -S and -B options here to specify source 
+      # and build directories, but this is only available with CMake 3.13 and higher.  
+      # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
+      run: cmake ${{runner.workspace}}/Units/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx }} 
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
