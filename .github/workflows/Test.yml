@@ -10,7 +10,6 @@ jobs:
     runs-on: ${{ matrix.os }} 
     strategy:
       matrix:
-      fail-fast: false
         cfg:
           - { os: ubuntu-20.04, name: Ubuntu 20 gcc 7 Debug,      cc: gcc-7.5,  cxx: g++-7.5,  build_type: Debug }
           - { os: ubuntu-20.04, name: Ubuntu 20 gcc 7 Release,    cc: gcc-7.5,  cxx: g++-7.5,  build_type: Release }
