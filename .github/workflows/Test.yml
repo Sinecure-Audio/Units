@@ -73,11 +73,15 @@ jobs:
       # Note the current convention is to use the -S and -B options here to specify source 
       # and build directories, but this is only available with CMake 3.13 and higher.  
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
-      run: |
-        ls -l .
-        cmake ../Units/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} 
+      run: cmake ../Units/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}  -G"NMake Makefiles"
       # cmake $GITHUB_WORKSPACE/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} 
-      # cmake $GITHUB_WORKSPACE/Units/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} 
+      # cmake $GITHUB_WORKSPACE/Units/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
+
+    - name: List dir after config
+      working-directory: ${{runner.workspace}}/build
+      run: |
+        cd ./
+        ls -l . 
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
