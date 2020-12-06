@@ -36,7 +36,11 @@ jobs:
       run: |
         cd Catch2
         cmake -Bbuild -H. -DBUILD_TESTING=OFF
-        sudo cmake --build build/ --target install
+        if [ "$RUNNER_OS" == "Windows" ]; then
+              cmake --build build/ --target install
+        else
+              sudo cmake --build build/ --target install
+        fi
 
     - name: Create Build Environment
       # Some projects don't allow in-source building, so create a separate build directory
