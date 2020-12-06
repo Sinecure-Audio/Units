@@ -58,12 +58,14 @@ jobs:
 
     - name: List dir
       working-directory: ${{runner.workspace}}/build
-      run: ls -l .
+      run: |
+        cd ./
+        ls -l .
 
-    - name: List parent dir
+    - name: List parent's unit dir
       working-directory: ${{runner.workspace}}/build
       run: |
-        cd ../
+        cd ../Units
         ls -l .
 
     - name: Configure CMake
@@ -73,8 +75,9 @@ jobs:
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
       run: |
         ls -l .
-        cmake ../Units/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} 
+        cmake ../Units/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} 
       # cmake $GITHUB_WORKSPACE/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} 
+      # cmake $GITHUB_WORKSPACE/Units/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} 
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
