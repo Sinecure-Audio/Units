@@ -20,8 +20,7 @@ jobs:
       matrix:
       # os: [ubuntu-20.04, ubuntu-18.04, windows-latest, macos-10.15, macos-11.0]        
         os: [windows-latest]        
-      # build-type: [Debug, Release]
-        build-type: [Debug]
+        build-type: [Debug, Release]
 
     steps:
     - name: Checkout repo
@@ -62,18 +61,14 @@ jobs:
         cd ./
         ls -l .
 
-    - name: List parent's unit dir
-      working-directory: ${{runner.workspace}}/build
-      run: |
-        cd ../Units
-        ls -l .
-
-    - name: Configure CMake
+    - name: Configure CMake 
       working-directory: ${{runner.workspace}}/build
       # Note the current convention is to use the -S and -B options here to specify source 
       # and build directories, but this is only available with CMake 3.13 and higher.  
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
-      run: cmake ../Units/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
+      run: cmake ${{runner.workspace}}/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
+      #Windows command
+      # run: cmake ../Units/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}      
       # cmake $GITHUB_WORKSPACE/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} 
       # cmake $GITHUB_WORKSPACE/Units/main/tests -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
 
@@ -89,8 +84,14 @@ jobs:
       run: cmake --build . --config $BUILD_TYPE
 
 
-    - name: Test
+    - name: Test (*nix)
       working-directory: ${{runner.workspace}}/build
+      if: matrix.os != 'windows-latest'
+      # Execute tests defined by the CMake configuration. 
+      run: cmake --build . --config $BUILD_TYPE --target test
+
+    - name: Test (Windows)
+      working-directory: ${{runner.workspace}}/build
+      if: matrix.os == 'windows-latest'
       # Execute tests defined by the CMake configuration. 
       run: cmake --build . --config $BUILD_TYPE --target RUN_TESTS
-    # run: cmake --build . --config $BUILD_TYPE --target test
