@@ -144,15 +144,15 @@ std::ostream& operator << ( std::ostream& os, const Decibel<T>& value ) {
 template <typename T, typename U>
 constexpr auto operator+(const Decibel<T>& lhs, const Decibel<U>& rhs){
     const auto a = std::pow(T{10}, lhs.count()/T{10});
-    if(isinf(a))
+    if(std::isinf(a))
         return Decibel<T>(lhs.getMinusInfinityDB());
 
     const auto b = std::pow(U{10}, rhs.count()/U{10});
-    if(isinf(b))
+    if(std::isinf(b))
         return Decibel<T>(lhs.getMinusInfinityDB());
     else {
         const auto c = 10 * std::log10 (a + b);
-        if(isinf(c))
+        if(std::isinf(c))
             return Decibel<T>(lhs.getMinusInfinityDB());
         else
             return Decibel<T>(c);
@@ -162,15 +162,15 @@ constexpr auto operator+(const Decibel<T>& lhs, const Decibel<U>& rhs){
 template <typename T, typename U>
 constexpr Decibel<T> operator-(const Decibel<T>& lhs, const Decibel<U>& rhs){
     const auto a = std::pow(T{10}, lhs.count()/T{10});
-    if(isinf(a))
+    if(std::isinf(a))
         return Decibel<T>(lhs.getMinusInfinityDB());
 
     const auto b = std::pow(U{10}, rhs.count()/U{10});
-    if(isinf(b))
+    if(std::isinf(b))
         return Decibel<T>(lhs.getMinusInfinityDB());
     else {
         const auto c = 10 * std::log (a - b);
-        if(isinf(c))
+        if(std::isinf(c))
             return Decibel<T>(lhs.getMinusInfinityDB());
         else
             return Decibel<T>(c);
