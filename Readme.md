@@ -1,3 +1,5 @@
+![image](https://github.com/Sinecure-Audio/Units/workflows/Run_Tests/badge.svg)
+
 This is a small library for defining units. It is intended to facilitate the writing of type-safe API's. It includes 4 unit template classes (Amplitude, Decibel, Q Coefficient, and resonance 
 coefficient), as well as a base unit template class that you can inherit from to define your own units. The base unit template overloads all of the standard arithmetic, bitshift, and assignment 
 operators, and so by default any subclass will have these operations defined for it (as long as both operands are of the same type, or in the case of multiplication and addition, one of the operands is 
