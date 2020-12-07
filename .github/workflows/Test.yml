@@ -1,13 +1,13 @@
 name: Run_Tests
 
 on: 
-  push:
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
   schedule:
     # * is a special character in YAML so you have to quote this string
     # Run at midnight UTC every saturday- basically check to see if catch or github runners have broken the repo this week in a way that notifies me at the start of my weekend
-    - cron:  '0 0 * * 6'
-  # pull_request:
-  #   branches: [ master ]
+    - cron:  '0 0 * * 6'  
 
 jobs:
   build:
@@ -76,10 +76,10 @@ jobs:
           - { os: macos-11.0,     name: macOS 11.0 Apple Clang Debug,     cc: clang,    cxx: clang++,                                                  build_type: Debug,     sudo: sudo, test_name: tests }
           - { os: macos-11.0,     name: macOS 11.0 Apple Clang Release,   cc: clang,    cxx: clang++,                                                  build_type: Release,   sudo: sudo, test_name: tests } 
 
-          - { os: windows-latest, name: Windows cl Debug,                 cc: cl,       cxx: cl,                                                       build_type: Debug,     sudo: , test_name: RUN_TESTS} 
-          - { os: windows-latest, name: Windows cl Release,               cc: cl,       cxx: cl,                                                       build_type: Release,   sudo: , test_name: RUN_TESTS}
-          - { os: windows-latest, name: Windows clang Debug,              cc: clang-cl, cxx: clang-cl,                                                 build_type: Debug,     sudo: , test_name: RUN_TESTS}
-          - { os: windows-latest, name: Windows clang Release,            cc: clang-cl, cxx: clang-cl,                                                 build_type: Release,   sudo: , test_name: RUN_TESTS}   
+          - { os: windows-latest, name: Windows cl Debug,                 cc: cl,       cxx: cl,                                                       build_type: Debug,     sudo: , test_name: RUN_TESTS } 
+          - { os: windows-latest, name: Windows cl Release,               cc: cl,       cxx: cl,                                                       build_type: Release,   sudo: , test_name: RUN_TESTS }
+          - { os: windows-latest, name: Windows clang Debug,              cc: clang-cl, cxx: clang-cl,                                                 build_type: Debug,     sudo: , test_name: RUN_TESTS }
+          - { os: windows-latest, name: Windows clang Release,            cc: clang-cl, cxx: clang-cl,                                                 build_type: Release,   sudo: , test_name: RUN_TESTS }   
           
 
     steps:
