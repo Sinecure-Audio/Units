@@ -124,7 +124,7 @@ jobs:
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: cmake --build . --config "${{ matrix.config.build-type }}"
 
-    #Run the tests. This is the default version
+    #Run the tests.
     - name: Run Tests
       working-directory: ${{runner.workspace}}/build
       if: matrix.config.os != 'windows-latest'
